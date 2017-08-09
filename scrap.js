@@ -30,8 +30,8 @@ function elapsed_time(note) {
 
 try{
 var wstream = fs.createWriteStream('./' + outFile);
-
-(async function () {
+ 
+(async function () { 
     const instance = await phantom.create();
     const page = await instance.createPage();
 
