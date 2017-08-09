@@ -3,6 +3,8 @@ const fs = require('fs');
 
 var debug = true;
 var start = process.hrtime();
+var outFile = 'scrap_output.txt';
+
 // var elapsed_time = function(note){
 //     var precision = 3; // 3 decimal places
 //     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
@@ -25,6 +27,9 @@ function elapsed_time(note) {
         }
     });
 }
+
+try{
+var wstream = fs.createWriteStream('./' + outFile);
 
 (async function () {
     const instance = await phantom.create();
@@ -63,10 +68,13 @@ function elapsed_time(note) {
                 urlFile = html.nextHref;
             });
 
-        fs.writeFile('./output/' + outFile + '.' + index + '.txt', ti + co, function (err) {
-            if (err) {
-                return console.log(err);
-            }
+        // fs.writeFile('./output/' + outFile + '.' + index + '.txt', ti + co, function (err) {
+        //     if (err) {
+        //         return console.log(err);
+        //     }
+        // });
+        wstream.write(ti + co, function(err){
+            if(err){return console.log(err);}
         });
 
         // Dont have to evaluate twice, just include the data in JSON returned above.
@@ -83,5 +91,13 @@ function elapsed_time(note) {
     //console.timeEnd('scrap');
     if (debug) console.log(await elapsed_time('end '));
 
+    
+
     await instance.exit();
 }());
+
+}
+finally
+{
+    wstream.close();
+}
