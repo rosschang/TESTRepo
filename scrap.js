@@ -3,7 +3,6 @@ const fs = require('fs');
 
 var debug = true;
 var start = process.hrtime();
-var outFile = 'scrap_output.txt';
 
 // var elapsed_time = function(note){
 //     var precision = 3; // 3 decimal places
@@ -28,20 +27,30 @@ function elapsed_time(note) {
     });
 }
 
-try{
-var wstream = fs.createWriteStream('./' + outFile);
+//try{
+
  
 (async function () { 
     const instance = await phantom.create();
     const page = await instance.createPage();
+    //instance.settings.resourceTimeout = 5000;
+
+    page.setting('resourceTimeout', 5000);
+
+//    page.property('onResourceTimeout', function(e) {
+//       console.log(e.errorCode);   // it'll probably be 408 
+//        console.log(e.errorString); // it'll probably be 'Network timeout on resource'
+//        console.log(e.url);         // the url whose request timed out
+//      });
 
     var ti, co;
-    var urlPath = 'http://www.166xs.com/xiaoshuo/57/57720/';
-    var urlFile = '29090842.html';
+    var urlPath = 'http://www.166xs.com/xiaoshuo/50/50578/';
+    var urlFile = '10395795.html';
     var outFile;
+    var outFileFinal = 'scrap_output.txt';
     var index = 1;
     const regexBr = /<br\s*[\/]?>/gi;
-    const regexNbsp = /&nbsp;/g
+    const regexNbsp = /&nbsp;/g;
 
     // appears to be faster without this event tied up
     // await page.on("onResourceRequested", function(requestData) {
@@ -52,9 +61,13 @@ var wstream = fs.createWriteStream('./' + outFile);
     //console.time('scrap');
     if (debug) console.log(await elapsed_time('start '));
 
+    var wstream = await fs.createWriteStream('./' + outFileFinal);
+
     while (true) {
         const status = await page.open(urlPath + urlFile);
         console.log(status);
+
+        if(status === 'fail') continue; // load failed, try again.
 
         //await page.includeJs('http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js');
         await page.injectJs('./jquery-1.10.2.min.js');
@@ -73,7 +86,8 @@ var wstream = fs.createWriteStream('./' + outFile);
         //         return console.log(err);
         //     }
         // });
-        wstream.write(ti + co, function(err){
+
+        wstream.write(ti + co + '\n\n' , function(err){
             if(err){return console.log(err);}
         });
 
@@ -86,18 +100,20 @@ var wstream = fs.createWriteStream('./' + outFile);
         if (urlFile === '' || urlFile === 'index.html') break;
 
         index++;
+
+        //if (index > 10 ) break; // short loop use for debugging purpose.
     }
     //if(debug) elapsed_time("end loop");
     //console.timeEnd('scrap');
     if (debug) console.log(await elapsed_time('end '));
 
-    
-
+    await wstream.end();
+    await wstream.close();
     await instance.exit();
 }());
 
-}
-finally
-{
-    wstream.close();
-}
+//}
+//finally
+//{
+
+//}
