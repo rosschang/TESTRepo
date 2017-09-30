@@ -37,11 +37,11 @@ function elapsed_time(note) {
 
     page.setting('resourceTimeout', 5000);
 
-//    page.property('onResourceTimeout', function(e) {
-//       console.log(e.errorCode);   // it'll probably be 408 
-//        console.log(e.errorString); // it'll probably be 'Network timeout on resource'
-//        console.log(e.url);         // the url whose request timed out
-//      });
+    page.property('onResourceTimeout', function(e) {
+       console.log(e.errorCode);   // it'll probably be 408 
+        console.log(e.errorString); // it'll probably be 'Network timeout on resource'
+        console.log(e.url);         // the url whose request timed out
+      });
 
     var ti, co;
     var urlPath = 'http://www.166xs.com/xiaoshuo/50/50578/';
