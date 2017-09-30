@@ -110,7 +110,7 @@ function elapsed_time(note) {
     await wstream.end();
     await wstream.close();
     await instance.exit();
-}());
+}());    
   
 //}
 //finally
